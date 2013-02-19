@@ -1,0 +1,219 @@
+﻿<Window x:Class="TaskbarSample.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:shell="http://schemas.microsoft.com/winfx/2006/xaml/presentation/shell"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    Title="Win7 Taskbar Sample" Height="494" Width="633"
+    Icon="app.ico"
+    SizeToContent="WidthAndHeight"
+    ShowInTaskbar="{Binding ElementName=_showInTaskbar, Path=IsChecked, FallbackValue=True}"
+    BorderThickness="20, 10" BorderBrush="AliceBlue">
+  <!-- Copyright Microsoft Corporation. All Rights Reserved. -->
+  <Window.Resources>
+    <CollectionViewSource x:Key="ProgressStates">
+      <CollectionViewSource.Source>
+        <ObjectDataProvider MethodName="GetNames" ObjectType="{x:Type sys:Enum}">
+          <ObjectDataProvider.MethodParameters>
+            <x:Type TypeName="shell:TaskbarItemProgressState"/>
+          </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+      </CollectionViewSource.Source>
+    </CollectionViewSource>
+  </Window.Resources>
+
+  <shell:TaskbarItemInfo.TaskbarItemInfo>
+    <shell:TaskbarItemInfo
+        ProgressState="{Binding ElementName=_progressState, Path=SelectedItem}"
+        ProgressValue="{Binding ElementName=_progressSlider, Path=Value}"
+        Description="{Binding ElementName=_textBox, Path=Text}"
+        Overlay="{Binding ElementName=_overlaySelection, Path=SelectedItem.Source}"
+        ThumbnailClipMargin="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=BorderThickness}">
+      <shell:TaskbarItemInfo.ThumbButtonInfos>
+        <shell:ThumbButtonInfo
+            IsInteractive="False"
+            IsBackgroundVisible="False"
+            ImageSource="app.ico"/>
+        <shell:ThumbButtonInfo
+            DismissWhenClicked="False"
+            ImageSource="images/cut.png"
+            Command="Cut"
+            CommandTarget="{Binding ElementName=_textBox}"
+            Description="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}"/>
+        <shell:ThumbButtonInfo
+            DismissWhenClicked="False"
+            ImageSource="images/copy.png"
+            Command="Copy"
+            CommandTarget="{Binding ElementName=_textBox}"
+            Description="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}"/>
+        <shell:ThumbButtonInfo
+            DismissWhenClicked="False"
+            ImageSource="images/paste.png"
+            Command="Paste"
+            CommandTarget="{Binding ElementName=_textBox}"
+            Description="{Binding RelativeSource={RelativeSource Self}, Path=Command.Text}"/>
+        <shell:ThumbButtonInfo
+            IsEnabled="False"
+            IsBackgroundVisible="False"/>
+        <shell:ThumbButtonInfo 
+            Click="ThumbButtonInfo_Click" 
+            ImageSource="{Binding ElementName=_overlaySelection, Path=SelectedItem.Source}" 
+            DismissWhenClicked="True"/>
+      </shell:TaskbarItemInfo.ThumbButtonInfos>
+    </shell:TaskbarItemInfo>
+  </shell:TaskbarItemInfo.TaskbarItemInfo>
+  
+  <TabControl>
+    <TabItem Header="Taskbar Integration">
+      <GroupBox Margin="5" Header="Taskbar Integration" MinWidth="300">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="100" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+
+          <Label HorizontalAlignment="Right">Progress:</Label>
+          <Slider Grid.Column="1" x:Name="_progressSlider"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Maximum="1" LargeChange="0.1" SmallChange="0.01" TickPlacement="BottomRight" TickFrequency="0.1" />
+
+          <Label HorizontalAlignment="Right" Grid.Row="1">State:</Label>
+          <ComboBox Grid.Row="1" Grid.Column="1" x:Name="_progressState" DataContext="{StaticResource ProgressStates}" ItemsSource="{Binding}" VerticalAlignment="Center"/>
+
+          <Label Grid.Row="2" HorizontalAlignment="Right">Command Text:</Label>
+          <TextBox Grid.Column="1" Grid.Row="2" x:Name="_textBox"  Text="Cut, copy, or paste text here. Try the thumbnail buttons." />
+
+          <Label Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center">Overlay:</Label>
+          <ListBox x:Name="_overlaySelection" Grid.Row="3" Grid.Column="1" Margin="5" SelectedIndex="0">
+            <ListBox.Resources>
+              <Style TargetType="{x:Type ListBox}">
+                <Setter Property="BorderBrush" Value="{x:Null}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="ItemContainerStyle">
+                  <Setter.Value>
+                    <Style TargetType="{x:Type ListBoxItem}" >
+                      <Setter Property="Margin" Value="2" />
+                      <Setter Property="Template">
+                        <Setter.Value>
+                          <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <Border Background="Transparent">
+                              <RadioButton Margin="3" Focusable="False" IsHitTestVisible="False" IsChecked="{TemplateBinding IsSelected}">
+                                <ContentPresenter />
+                              </RadioButton>
+                            </Border>
+                          </ControlTemplate>
+                        </Setter.Value>
+                      </Setter>
+                    </Style>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </ListBox.Resources>
+
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <ListBoxItem VerticalAlignment="Center" >None</ListBoxItem>
+            <Image Height="20" VerticalAlignment="Center" Source="images/CircleGreen.png"/>
+            <Image Height="20" VerticalAlignment="Center" Source="images/CircleYellow.png"/>
+            <Image Height="20" VerticalAlignment="Center" Source="images/CircleRed.png"/>
+          </ListBox>
+
+          <CheckBox x:Name="_showInTaskbar" Grid.ColumnSpan="2" Grid.Row="4" VerticalAlignment="Top" IsChecked="True">Show in taskbar?</CheckBox>
+        </Grid>
+      </GroupBox>
+    </TabItem>
+
+    <TabItem Header="Jump List Integration">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" MinWidth="100" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0">
+          <GroupBox Margin="5" Header="Jump List Options" MinWidth="250">
+            <StackPanel>
+              <CheckBox Width="100" Click="UpdateKnownCategories" x:Name="_showRecentButton">Show Recent</CheckBox>
+              <CheckBox Width="100" Click="UpdateKnownCategories" x:Name="_showFrequentButton">Show Frequent</CheckBox>
+              <CheckBox Width="100" x:Name="_deferApply">Defer Apply</CheckBox>
+              <Button Margin="10,5" Width="100" Click="JumpList_Apply" IsEnabled="{Binding ElementName=_deferApply, Path=IsChecked, FallbackValue=True}">Apply Now!</Button>
+              <Button Margin="10,5" Width="100" Click="JumpList_Clear">Clear Jump List!</Button>
+            </StackPanel>
+          </GroupBox>
+
+          <GroupBox Margin="5" Header="JumpPath Builder" MinWidth="250">
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
+              </Grid.ColumnDefinitions>
+              <Label Grid.Row="0">Path:</Label>
+              <TextBox Grid.Row="0" Grid.Column="1" x:Name="_jumpPathPathBox"/>
+              <Label Grid.Row="1">Category:</Label>
+              <TextBox Grid.Row="1" Grid.Column="1" x:Name="_jumpPathCategoryBox" />
+              <WrapPanel Grid.ColumnSpan="2" Grid.Row="2">
+                <Button Click="JumpPath_AddToRecent" Margin="0 5 5 0">Add to Recent/Frequent</Button>
+                <Button Click="JumpPath_AddToCategory" Margin="0 5 0 0">Add Path</Button>
+              </WrapPanel>
+            </Grid>
+          </GroupBox>
+
+        </StackPanel>
+        <GroupBox Grid.Column="1"  Margin="5" Header="JumpTask Builder" MaxWidth="400" MinWidth="250" VerticalAlignment="Top">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0">ApplicationPath:</Label>
+            <TextBox Grid.Row="0" Grid.Column="1" x:Name="_jumpTaskAppPathBox"/>
+            <Label Grid.Row="1">IconResourcePath:</Label>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="_jumpTaskIconResourcePathBox"/>
+            <Label Grid.Row="2">IconResourceIndex:</Label>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="_jumpTaskIconResourceIndexBox"/>
+            <Label Grid.Row="3">Arguments:</Label>
+            <TextBox Grid.Row="3" Grid.Column="1" x:Name="_jumpTaskArgsBox"/>
+            <Label Grid.Row="4">Working Directory:</Label>
+            <TextBox Grid.Row="4" Grid.Column="1" x:Name="_jumpTaskWorkingDirBox"/>
+            <Label Grid.Row="5">Title:</Label>
+            <TextBox Grid.Row="5" Grid.Column="1" x:Name="_jumpTaskTitleBox"/>
+            <Label Grid.Row="6">Description:</Label>
+            <TextBox Grid.Row="6" Grid.Column="1" x:Name="_jumpTaskDescriptionBox"/>
+            <Label Grid.Row="7">Category:</Label>
+            <TextBox Grid.Row="7" Grid.Column="1" x:Name="_jumpTaskCategoryBox"/>
+            <WrapPanel Grid.ColumnSpan="2" Grid.Row="8">
+              <Button Click="JumpTask_AddToRecent" Margin="0 5 5 0">Add to Recent/Frequent</Button>
+              <Button Click="JumpTask_AddToCategory" Margin="0 5 5 0">Add Task</Button>
+              <Button Click="JumpTask_ClearInput" Margin="0 5 0 0">Clear Input</Button>
+            </WrapPanel>
+          </Grid>
+        </GroupBox>
+      </Grid>
+    </TabItem>
+  </TabControl>
+</Window>

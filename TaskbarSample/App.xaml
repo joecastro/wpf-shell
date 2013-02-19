@@ -1,0 +1,36 @@
+﻿<Application x:Class="TaskbarSample.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:shell="http://schemas.microsoft.com/winfx/2006/xaml/presentation/shell"
+    Startup="OnStartup"
+    StartupUri="MainWindow.xaml">
+  <!-- Copyright Microsoft Corporation. All Rights Reserved. -->
+  <shell:JumpList.JumpList>
+    <shell:JumpList
+        ShowFrequentCategory="True" 
+        ShowRecentCategory="False"
+        JumpItemsRejected="OnJumpItemsRejected" 
+        JumpItemsRemovedByUser="OnJumpItemsRemoved">
+      <!-- Null ApplicationPath implies use the running process -->
+      <shell:JumpTask
+        Arguments="/Arg1"
+        Title="Run this process with Arg1"
+        Description="Start this process with /Task1"/>
+      <!-- Can refer to another program in a Task.  Can even use icon resources from it, or another DLL. -->
+      <shell:JumpTask
+        ApplicationPath="calc.exe"
+        IconResourcePath="calc.exe"
+        IconResourceIndex="0"
+        Arguments="/Arg1"
+        Title="Run Calculator"
+        Description="Start OtherApp.exe with /Arg1. The task appears in the jump list for the current process"/>
+      <shell:JumpTask
+        ApplicationPath="notepad.exe"
+        IconResourcePath="notepad.exe"
+        CustomCategory="My Category"
+        Arguments="readme.txt"
+        Title="Create readme.txt"
+        Description="This link shows up in its own category.  It can be pinned or removed by the user"/>
+    </shell:JumpList>
+  </shell:JumpList.JumpList>
+</Application>
