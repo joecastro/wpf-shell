@@ -11,6 +11,35 @@ namespace Microsoft.Windows.Shell
     using System.Windows.Data;
     using Standard;
 
+    public enum ResizeGripDirection
+    {
+        None,
+        TopLeft,
+        Top,
+        TopRight,
+        Right,
+        BottomRight,
+        Bottom,
+        BottomLeft,
+        Left,
+    }
+
+    [Flags]
+    public enum SacrificialEdge
+    {
+        None = 0,
+        Left = 1,
+        Top = 2,
+        Right = 4,
+        Bottom = 8,
+
+        Office = Left | Right | Bottom,
+
+        // Don't use "All" - Handling WM_NCCALCSIZE with a client rect shrunk in all directions implicitly creates a 
+        // normal sized caption area that doesn't actually properly participate with the rest of the implementation...
+        // All = Left | Top | Right | Bottom,
+    }
+
     public class WindowChrome : Freezable
     {
         private struct _SystemParameterBoundProperty
@@ -49,7 +78,7 @@ namespace Microsoft.Windows.Shell
             // Update the ChromeWorker with this new object.
 
             // If there isn't currently a worker associated with the Window then assign a new one.
-            // There can be a many:1 relationship of to Window to WindowChrome objects, but a 1:1 for a Window and a WindowChromeWorker.
+            // There can be a many:1 relationship of Window to WindowChrome objects, but a 1:1 for a Window and a WindowChromeWorker.
             WindowChromeWorker chromeWorker = WindowChromeWorker.GetWindowChromeWorker(window);
             if (chromeWorker == null)
             {
@@ -108,6 +137,38 @@ namespace Microsoft.Windows.Shell
             dobj.SetValue(IsHitTestVisibleInChromeProperty, hitTestVisible);
         }
 
+        public static readonly DependencyProperty ResizeGripDirectionProperty = DependencyProperty.RegisterAttached(
+            "ResizeGripDirection",
+            typeof(ResizeGripDirection),
+            typeof(WindowChrome),
+            new FrameworkPropertyMetadata(ResizeGripDirection.None, FrameworkPropertyMetadataOptions.Inherits));
+
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+        public static ResizeGripDirection GetResizeGripDirection(IInputElement inputElement)
+        {
+            Verify.IsNotNull(inputElement, "inputElement");
+            var dobj = inputElement as DependencyObject;
+            if (dobj == null)
+            {
+                throw new ArgumentException("The element must be a DependencyObject", "inputElement");
+            }
+            return (ResizeGripDirection)dobj.GetValue(ResizeGripDirectionProperty);
+        }
+
+        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+        [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+        public static void SetResizeGripDirection(IInputElement inputElement, ResizeGripDirection direction)
+        {
+            Verify.IsNotNull(inputElement, "inputElement");
+            var dobj = inputElement as DependencyObject;
+            if (dobj == null)
+            {
+                throw new ArgumentException("The element must be a DependencyObject", "inputElement");
+            }
+            dobj.SetValue(ResizeGripDirectionProperty, direction);
+        }
+
         #endregion
 
         #region Dependency Properties
@@ -161,10 +222,23 @@ namespace Microsoft.Windows.Shell
 
             return thickness;
         }
+
         public Thickness GlassFrameThickness
         {
             get { return (Thickness)GetValue(GlassFrameThicknessProperty); }
             set { SetValue(GlassFrameThicknessProperty, value); }
+        }
+
+        public static readonly DependencyProperty UseAeroCaptionButtonsProperty = DependencyProperty.Register(
+            "UseAeroCaptionButtons",
+            typeof(bool),
+            typeof(WindowChrome),
+            new FrameworkPropertyMetadata(true));
+
+        public bool UseAeroCaptionButtons
+        {
+            get { return (bool)GetValue(UseAeroCaptionButtonsProperty); }
+            set { SetValue(UseAeroCaptionButtonsProperty, value); }
         }
 
         public static readonly DependencyProperty CornerRadiusProperty = DependencyProperty.Register(
@@ -180,6 +254,55 @@ namespace Microsoft.Windows.Shell
         {
             get { return (CornerRadius)GetValue(CornerRadiusProperty); }
             set { SetValue(CornerRadiusProperty, value); }
+        }
+
+        public static readonly DependencyProperty SacrificialEdgeProperty = DependencyProperty.Register(
+            "SacrificialEdge",
+            typeof(SacrificialEdge),
+            typeof(WindowChrome),
+            new PropertyMetadata(
+                SacrificialEdge.None,
+                (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()),
+                _IsValidSacrificialEdge);
+
+        private static readonly SacrificialEdge SacrificialEdge_All = SacrificialEdge.Bottom | SacrificialEdge.Top | SacrificialEdge.Left | SacrificialEdge.Right;
+
+        private static bool _IsValidSacrificialEdge(object value)
+        {
+            SacrificialEdge se = SacrificialEdge.None;
+            try
+            {
+                se = (SacrificialEdge)value;
+            }
+            catch (InvalidCastException)
+            {
+                return false;
+            }
+
+            if (se == SacrificialEdge.None)
+            {
+                return true;
+            }
+
+            // Does this only contain valid bits?
+            if ((se | SacrificialEdge_All) != SacrificialEdge_All)
+            {
+                return false;
+            }
+
+            // It can't sacrifice all 4 edges.  Weird things happen.
+            if (se == SacrificialEdge_All)
+            {
+                return false;
+            }
+
+            return true; 
+        }
+
+        public SacrificialEdge SacrificialEdge
+        {
+            get { return (SacrificialEdge)GetValue(SacrificialEdgeProperty); }
+            set { SetValue(SacrificialEdgeProperty, value); }
         }
 
         #endregion
