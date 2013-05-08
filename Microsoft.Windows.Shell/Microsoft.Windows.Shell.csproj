@@ -115,20 +115,19 @@
     <Compile Include="JumpPath.cs" />
     <Compile Include="JumpTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Standard\ComGuids.cs" />
-    <Compile Include="Standard\Debug.cs" />
-    <Compile Include="Standard\DoubleUtil.cs" />
-    <Compile Include="Standard\ErrorCodes.cs" />
-    <Compile Include="Standard\MessageWindow.cs" />
-    <Compile Include="Standard\NativeMethods.cs" />
-    <Compile Include="Standard\ShellProvider.cs" />
-    <Compile Include="Standard\StreamHelper.cs" />
-    <Compile Include="Standard\Utilities.cs" />
-    <Compile Include="Standard\Verify.cs" />
-    <Compile Include="Standard\Wpf\DpiHelper.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Standard\Wpf\Utilities.Wpf.cs" />
+    <Compile Include="standard.net\Windows\ComGuids.cs" />
+    <Compile Include="standard.net\Debug.cs" />
+    <Compile Include="standard.net\DoubleUtil.cs" />
+    <Compile Include="standard.net\Windows\ErrorCodes.cs" />
+    <Compile Include="standard.net\Wpf\MessageWindow.cs" />
+    <Compile Include="standard.net\Windows\NativeMethods.cs" />
+    <Compile Include="standard.net\Windows\ShellProvider.cs" />
+    <Compile Include="standard.net\Windows\StreamHelper.cs" />
+    <Compile Include="standard.net\Utilities.cs" />
+    <Compile Include="standard.net\Verify.cs" />
+    <Compile Include="standard.net\Wpf\DpiHelper.cs" />
+    <Compile Include="standard.net\Wpf\Utilities.Wpf.cs" />
+    <Compile Include="standard.net\Windows\Utilities.Windows.cs" />
     <Compile Include="SystemCommands.cs" />
     <Compile Include="SystemParameters2.cs" />
     <Compile Include="TaskbarItemInfo.cs" />
