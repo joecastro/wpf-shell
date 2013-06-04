@@ -524,6 +524,8 @@ namespace Microsoft.Windows.Shell
                     return compliment ? HT.TOPRIGHT : HT.TOPLEFT;
                 case ResizeGripDirection.TopRight:
                     return compliment ? HT.TOPLEFT : HT.TOPRIGHT;
+                case ResizeGripDirection.Caption:
+                    return HT.CAPTION;
                 default:
                     return HT.NOWHERE;
             }
