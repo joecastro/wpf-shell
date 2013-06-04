@@ -22,6 +22,7 @@ namespace Microsoft.Windows.Shell
         Bottom,
         BottomLeft,
         Left,
+        Caption,
     }
 
     [Flags]

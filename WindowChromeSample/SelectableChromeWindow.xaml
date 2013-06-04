@@ -47,8 +47,9 @@
           <shell:WindowChrome
             ResizeBorderThickness="6"
             CaptionHeight="40"
-            CornerRadius="6,0,6,20"
-            GlassFrameThickness="0"/>
+            CornerRadius="0"
+            GlassFrameThickness="1"
+            UseAeroCaptionButtons="False"/>
         </Setter.Value>
       </Setter>
       <Setter Property="Template">
@@ -82,6 +83,15 @@
                   CommandParameter="{Binding ElementName=ThisWindow}">
                 <Bold shell:WindowChrome.IsHitTestVisibleInChrome="False">XXX</Bold>
               </Button>
+              
+              <Border x:Name="DragGripBorder"
+                  shell:WindowChrome.ResizeGripDirection="Caption"
+                  VerticalAlignment="Bottom" 
+                  HorizontalAlignment="Left"
+                  Width="20"
+                  Height="60"
+                  Margin="0,10"
+                  Background="Yellow"/>
             </Grid>
           </ControlTemplate>
         </Setter.Value>
