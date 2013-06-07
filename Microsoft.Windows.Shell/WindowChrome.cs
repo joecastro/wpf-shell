@@ -195,7 +195,7 @@ namespace Microsoft.Windows.Shell
             typeof(Thickness),
             typeof(WindowChrome),
             new PropertyMetadata(default(Thickness)),
-            (value) => Utility.IsThicknessNonNegative((Thickness)value));
+            (value) => ((Thickness)value).IsNonNegative());
 
         public Thickness ResizeBorderThickness
         {
@@ -216,7 +216,7 @@ namespace Microsoft.Windows.Shell
         {
             // If it's explicitly set, but set to a thickness with at least one negative side then 
             // coerce the value to the stock GlassFrameCompleteThickness.
-            if (!Utility.IsThicknessNonNegative(thickness))
+            if (!thickness.IsNonNegative())
             {
                 return GlassFrameCompleteThickness;
             }
@@ -249,7 +249,7 @@ namespace Microsoft.Windows.Shell
             new PropertyMetadata(
                 default(CornerRadius),
                 (d, e) => ((WindowChrome)d)._OnPropertyChangedThatRequiresRepaint()),
-            (value) => Utility.IsCornerRadiusValid((CornerRadius)value));
+            (value) => ((CornerRadius)value).IsValid());
 
         public CornerRadius CornerRadius
         {
