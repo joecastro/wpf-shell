@@ -16,9 +16,24 @@ namespace Microsoft.Windows.Shell
     using Standard;
 
     using HANDLE_MESSAGE = System.Collections.Generic.KeyValuePair<Standard.WM, Standard.MessageHandler>;
+    using System.Reflection;
 
     internal class WindowChromeWorker : DependencyObject
     {
+        private static readonly Version _presentationFrameworkVersion = Assembly.GetAssembly(typeof(Window)).GetName().Version;
+
+        /// <summary>
+        /// Is this using WPF4?
+        /// </summary>
+        /// <remarks>
+        /// There are a few specific bugs in Window in 3.5SP1 and below that require workarounds
+        /// when handling WM_NCCALCSIZE on the HWND.
+        /// </remarks>
+        private static bool _IsPresentationFrameworkVersionLessThan4
+        {
+            get { return _presentationFrameworkVersion < new Version(4, 0); }
+        }
+
         // Delegate signature used for Dispatcher.BeginInvoke.
         private delegate void _Action();
 
@@ -67,7 +82,7 @@ namespace Microsoft.Windows.Shell
                 new HANDLE_MESSAGE(WM.DWMCOMPOSITIONCHANGED, _HandleDwmCompositionChanged), 
             };
 
-            if (Utility.IsPresentationFrameworkVersionLessThan4)
+            if (_IsPresentationFrameworkVersionLessThan4)
             {
                 _messageTable.AddRange(new[] 
                 {
@@ -141,9 +156,6 @@ namespace Microsoft.Windows.Shell
             // If the window hasn't yet been shown, then we need to make sure to remove hooks after it's closed.
             _hwnd = new WindowInteropHelper(_window).Handle;
 
-            // if (Utility.IsPresentationFrameworkVersionLessThan4)
-            // {
-
             // On older versions of the framework the client size of the window is incorrectly calculated.
             // We need to modify the template to fix this on behalf of the user.
 
@@ -151,8 +163,6 @@ namespace Microsoft.Windows.Shell
             // the SacrificialEdge property which requires this kind of fixup to be a bit more ubiquitous.
             Utility.AddDependencyPropertyChangeListener(_window, Window.TemplateProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
             Utility.AddDependencyPropertyChangeListener(_window, Window.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
-        
-            // }
 
             _window.Closed += _UnsetWindow;
 
@@ -189,7 +199,6 @@ namespace Microsoft.Windows.Shell
 
         private void _UnsetWindow(object sender, EventArgs e)
         {
-            // if (Utility.IsPresentationFrameworkVersionLessThan4)
             Utility.RemoveDependencyPropertyChangeListener(_window, Window.TemplateProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
             Utility.RemoveDependencyPropertyChangeListener(_window, Window.FlowDirectionProperty, _OnWindowPropertyChangedThatRequiresTemplateFixup);
 
@@ -280,7 +289,7 @@ namespace Microsoft.Windows.Shell
             Thickness templateFixupMargin = default(Thickness);
             Transform templateFixupTransform = null;
 
-            if (Utility.IsPresentationFrameworkVersionLessThan4)
+            if (_IsPresentationFrameworkVersionLessThan4)
             {
                 RECT rcWindow = NativeMethods.GetWindowRect(_hwnd);
                 RECT rcAdjustedClient = _GetAdjustedWindowRect(rcWindow);
@@ -340,7 +349,7 @@ namespace Microsoft.Windows.Shell
             rootElement.Margin = templateFixupMargin;
             rootElement.RenderTransform = templateFixupTransform;
 
-            if (Utility.IsPresentationFrameworkVersionLessThan4)
+            if (_IsPresentationFrameworkVersionLessThan4)
             {
                 if (!_isFixedUp)
                 {
@@ -355,7 +364,7 @@ namespace Microsoft.Windows.Shell
 
         private void _FixupRestoreBounds(object sender, EventArgs e)
         {
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(_IsPresentationFrameworkVersionLessThan4);
             if (_window.WindowState == WindowState.Maximized || _window.WindowState == WindowState.Minimized)
             {
                 // Old versions of WPF sometimes force their incorrect idea of the Window's location
@@ -381,7 +390,7 @@ namespace Microsoft.Windows.Shell
         private RECT _GetAdjustedWindowRect(RECT rcWindow)
         {
             // This should only be used to work around issues in the Framework that were fixed in 4.0
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(_IsPresentationFrameworkVersionLessThan4);
 
             var style = (WS)NativeMethods.GetWindowLongPtr(_hwnd, GWL.STYLE);
             var exstyle = (WS_EX)NativeMethods.GetWindowLongPtr(_hwnd, GWL.EXSTYLE);
@@ -400,7 +409,7 @@ namespace Microsoft.Windows.Shell
             {
                 // We're only detecting this state to work around .Net 3.5 issues.
                 // This logic won't work correctly when those issues are fixed.
-                Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+                Assert.IsTrue(_IsPresentationFrameworkVersionLessThan4);
 
                 if (_window.WindowState != WindowState.Normal)
                 {
@@ -653,7 +662,7 @@ namespace Microsoft.Windows.Shell
         {
             // There are several settings that can cause fixups for the template to become invalid when changed.
             // These shouldn't be required on the v4 framework.
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(_IsPresentationFrameworkVersionLessThan4);
 
             _FixupTemplateIssues();
 
@@ -664,7 +673,7 @@ namespace Microsoft.Windows.Shell
         private IntPtr _HandleEnterSizeMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(_IsPresentationFrameworkVersionLessThan4);
 
             _isUserResizing = true;
 
@@ -691,7 +700,7 @@ namespace Microsoft.Windows.Shell
         private IntPtr _HandleExitSizeMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(_IsPresentationFrameworkVersionLessThan4);
 
             _isUserResizing = false;
 
@@ -711,7 +720,7 @@ namespace Microsoft.Windows.Shell
         private IntPtr _HandleMove(WM uMsg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
             // This is only intercepted to deal with bugs in Window in .Net 3.5 and below.
-            Assert.IsTrue(Utility.IsPresentationFrameworkVersionLessThan4);
+            Assert.IsTrue(_IsPresentationFrameworkVersionLessThan4);
 
             if (_isUserResizing)
             {
@@ -1210,11 +1219,10 @@ namespace Microsoft.Windows.Shell
             // This margin is only necessary if the client rect is going to be calculated incorrectly by WPF.
             // This bug was fixed in V4 of the framework.
             // But it still needs to happen if there was a SacrificialEdge.
-            //if (Utility.IsPresentationFrameworkVersionLessThan4)
 
             //Assert.IsTrue(_isFixedUp);
             
-            Assert.Implies(Utility.IsPresentationFrameworkVersionLessThan4, () => _isFixedUp);
+            Assert.Implies(_IsPresentationFrameworkVersionLessThan4, () => _isFixedUp);
 
             var rootElement = (FrameworkElement)VisualTreeHelper.GetChild(_window, 0);
             // Undo anything that was done before.
