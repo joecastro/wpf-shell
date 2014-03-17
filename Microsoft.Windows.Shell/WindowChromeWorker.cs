@@ -856,6 +856,7 @@ namespace Microsoft.Windows.Shell
                 if (!_isGlassEnabled)
                 {
                     _SetRoundingRegion(null);
+                    _ExtendGlassFrame();
                 }
                 else
                 {
