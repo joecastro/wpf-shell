@@ -856,13 +856,14 @@ namespace Microsoft.Windows.Shell
                 if (!_isGlassEnabled)
                 {
                     _SetRoundingRegion(null);
-                    _ExtendGlassFrame();
                 }
                 else
                 {
                     _ClearRoundingRegion();
-                    _ExtendGlassFrame();
                 }
+
+                // update the glass frame too, if the user sets the glass frame thickness to 0 at run time
+                _ExtendGlassFrame();
 
                 NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
             }
