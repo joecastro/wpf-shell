@@ -860,8 +860,10 @@ namespace Microsoft.Windows.Shell
                 else
                 {
                     _ClearRoundingRegion();
-                    _ExtendGlassFrame();
                 }
+
+                // update the glass frame too, if the user sets the glass frame thickness to 0 at run time
+                _ExtendGlassFrame();
 
                 NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
             }
@@ -900,7 +902,7 @@ namespace Microsoft.Windows.Shell
                 IntPtr hMon = NativeMethods.MonitorFromWindow(_hwnd, MONITOR_DEFAULTTONEAREST);
 
                 MONITORINFO mi = NativeMethods.GetMonitorInfo(hMon);
-                RECT rcMax = mi.rcWork;
+                RECT rcMax = _chromeInfo.IgnoreTaskbarOnMaximize ? mi.rcMonitor : mi.rcWork;
                 // The location of maximized window takes into account the border that Windows was
                 // going to remove, so we also need to consider it.
                 rcMax.Offset(-left, -top);
