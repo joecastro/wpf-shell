@@ -242,12 +242,17 @@ namespace Microsoft.Windows.Shell
             set { SetValue(UseAeroCaptionButtonsProperty, value); }
         }
 
+        /// <summary>Dependency property for IgnoreTaskbarOnMaximize</summary>
         public static readonly DependencyProperty IgnoreTaskbarOnMaximizeProperty = DependencyProperty.Register(
             "IgnoreTaskbarOnMaximize",
             typeof(bool),
             typeof(WindowChrome),
             new FrameworkPropertyMetadata(false));
 
+        /// <summary>
+        /// If this property is true and the attached window's WindowStyle=None then when the window is maximized it will cover the entire
+        /// monitor, including the taskbar.
+        /// </summary>
         public bool IgnoreTaskbarOnMaximize
         {
             get { return (bool)GetValue(IgnoreTaskbarOnMaximizeProperty); }
