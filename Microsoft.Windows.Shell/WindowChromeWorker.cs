@@ -856,14 +856,12 @@ namespace Microsoft.Windows.Shell
                 if (!_isGlassEnabled)
                 {
                     _SetRoundingRegion(null);
+                    _ExtendGlassFrame();
                 }
                 else
                 {
                     _ClearRoundingRegion();
                 }
-
-                // update the glass frame too, if the user sets the glass frame thickness to 0 at run time
-                _ExtendGlassFrame();
 
                 NativeMethods.SetWindowPos(_hwnd, IntPtr.Zero, 0, 0, 0, 0, _SwpFlags);
             }
@@ -872,6 +870,14 @@ namespace Microsoft.Windows.Shell
         private void _ClearRoundingRegion()
         {
             NativeMethods.SetWindowRgn(_hwnd, IntPtr.Zero, NativeMethods.IsWindowVisible(_hwnd));
+        }
+
+        private bool _ShouldRespectTaskbar
+        { 
+            get
+            {
+                return _window.WindowStyle != WindowStyle.None || !_chromeInfo.IgnoreTaskbarOnMaximize;
+            }
         }
 
         private void _SetRoundingRegion(WINDOWPOS? wp)
@@ -902,7 +908,7 @@ namespace Microsoft.Windows.Shell
                 IntPtr hMon = NativeMethods.MonitorFromWindow(_hwnd, MONITOR_DEFAULTTONEAREST);
 
                 MONITORINFO mi = NativeMethods.GetMonitorInfo(hMon);
-                RECT rcMax = _chromeInfo.IgnoreTaskbarOnMaximize ? mi.rcMonitor : mi.rcWork;
+                RECT rcMax = _ShouldRespectTaskbar ? mi.rcWork : mi.rcMonitor;
                 // The location of maximized window takes into account the border that Windows was
                 // going to remove, so we also need to consider it.
                 rcMax.Offset(-left, -top);
