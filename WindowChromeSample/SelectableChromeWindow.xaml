@@ -11,6 +11,8 @@
   <Window.CommandBindings>
     <CommandBinding Command="{x:Static shell:SystemCommands.CloseWindowCommand}"
                     Executed="_OnSystemCommandCloseWindow"/>
+    <CommandBinding Command="{x:Static shell:SystemCommands.ShowSystemMenuCommand}"
+                    Executed="OnSystemCommandShowSystemMenu"/>
   </Window.CommandBindings>
 
   <Window.Resources>
@@ -32,7 +34,9 @@
                   VerticalAlignment="Top" 
                   HorizontalAlignment="Left" 
                   Margin="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(shell:WindowChrome.WindowChrome).ResizeBorderThickness}" 
-                  Padding="8">
+                  Padding="8"
+                  Command="{x:Static shell:SystemCommands.ShowSystemMenuCommand}"
+                  CommandParameter="{Binding ElementName=ThisWindow}">
                 <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" Width="32" Height="32"/>
               </Button>
             </Grid>
@@ -69,7 +73,9 @@
                   VerticalAlignment="Top" 
                   HorizontalAlignment="Left" 
                   Margin="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(shell:WindowChrome.WindowChrome).ResizeBorderThickness}" 
-                  Padding="10">
+                  Padding="10"
+                  Command="{x:Static shell:SystemCommands.ShowSystemMenuCommand}"
+                  CommandParameter="{Binding ElementName=ThisWindow}">
                 <Image Source="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Icon}" Width="32" Height="32"/>
               </Button>
 
