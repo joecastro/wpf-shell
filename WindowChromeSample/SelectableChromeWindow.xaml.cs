@@ -36,5 +36,10 @@ namespace WindowChromeSample
         {
             SystemCommands.CloseWindow((Window)e.Parameter);
         }
+
+        private void OnSystemCommandShowSystemMenu(object sender, ExecutedRoutedEventArgs e)
+        {
+            SystemCommands.ShowSystemMenu((Window)e.Parameter, this.PointToScreen(Mouse.GetPosition(this)));
+        }
     }
 }
