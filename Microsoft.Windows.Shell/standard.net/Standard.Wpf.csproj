@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{89835A37-CA82-4036-A9E3-FC3456290F65}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Standard.Wpf</RootNamespace>
+    <AssemblyName>Standard.Wpf</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Csv.cs" />
+    <Compile Include="Debug.cs" />
+    <Compile Include="DoubleUtil.cs" />
+    <Compile Include="Enumerable2.cs" />
+    <Compile Include="MergeableCollection.cs" />
+    <Compile Include="Windows\ComGuids.cs" />
+    <Compile Include="Windows\ErrorCodes.cs" />
+    <Compile Include="Windows\FileWalker.cs" />
+    <Compile Include="Windows\NativeMethods.cs" />
+    <Compile Include="Windows\ShellProvider.cs" />
+    <Compile Include="Windows\StreamHelper.cs" />
+    <Compile Include="Windows\Utilities.Windows.cs" />
+    <Compile Include="Windows\WicProvider.cs" />
+    <Compile Include="Wpf\MessageWindow.cs" />
+    <Compile Include="NotifyingList.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SmallString.cs" />
+    <Compile Include="SmallUri.cs" />
+    <Compile Include="Utilities.cs" />
+    <Compile Include="Verify.cs" />
+    <Compile Include="Wpf\CornerRadiusAnimation.cs" />
+    <Compile Include="Wpf\CornerRadiusAnimationBase.cs" />
+    <Compile Include="Wpf\DpiHelper.cs" />
+    <Compile Include="Wpf\GlassHelper.cs" />
+    <Compile Include="Wpf\MshtmlProvider.cs" />
+    <Compile Include="Wpf\SingleInstance.cs" />
+    <Compile Include="Wpf\SplashScreen.cs" />
+    <Compile Include="Wpf\Utilities.Wpf.cs" />
+    <Compile Include="Wpf\WindowExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
